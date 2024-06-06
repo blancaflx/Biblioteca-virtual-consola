@@ -25,9 +25,9 @@ public class Libro {
     public Libro() {}
 
     public Libro(DatosLibro datosLibro) {
-        this.numeroDeDescargas = datosLibro.numeroDescargas();
-        this.idiomas = datosLibro.idiomas();
-        this.titulo = datosLibro.titulo();
+        this.numeroDeDescargas = datosLibro.downloadCount();
+        this.idiomas = datosLibro.languages();
+        this.titulo = datosLibro.title();
     }
 
 
@@ -78,7 +78,7 @@ public class Libro {
                 ", titulo='" + titulo + '\'' +
                 ", autores=" + autores +
                 ", idiomas=" + idiomas +
-                ", numero_de_descargas=" + numeroDeDescargas +
+                ", numeroDeDescargas=" + numeroDeDescargas +
                 '}';
     }
 }

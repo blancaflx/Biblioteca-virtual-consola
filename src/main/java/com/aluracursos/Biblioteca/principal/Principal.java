@@ -17,8 +17,8 @@ public class Principal {
     private ConvierteDatos conversor = new ConvierteDatos();
     private LibroRepository repositorio;
 
-    public Principal(LibroRepository repository) {
-        this.repositorio = repository;
+    public Principal(LibroRepository repositorio) {
+        this.repositorio = repositorio;
     }
 
     public void mostrarMenu(){
@@ -36,20 +36,21 @@ public class Principal {
             teclado.nextLine();
             switch (opcion){
                 case 1:
-                    System.out.println("Ingrese el nombre del libro que desea buscar:");
-                    var titulo = teclado.nextLine();
-                    var json = consumoApi.obtenerDatos(URL_BASE+"?search="+titulo.replace(" ", "+"));
-                    var buscarTitulo = conversor.obtenerDatos(json, Datos.class);
-                    Optional<DatosLibro> libroBuscado = buscarTitulo.resultados().stream()
-                            .filter(l -> l.titulo().toUpperCase().contains(titulo.toUpperCase()))
-                            .findFirst();
-                    if (libroBuscado.isPresent()){
-                        System.out.println("Libro encontrado");
-                        System.out.println(libroBuscado.get());
-
-                    } else {
-                        System.out.println("No hubo coincidencias");
-                    }
+//                    System.out.println("Ingrese el nombre del libro que desea buscar:");
+//                    var titulo = teclado.nextLine();
+//                    var json = consumoApi.obtenerDatos(URL_BASE+"?search="+titulo.replace(" ", "+"));
+//                    var buscarTitulo = conversor.obtenerDatos(json, Datos.class);
+//                    Optional<DatosLibro> libroBuscado = buscarTitulo.resultados().stream()
+//                            .filter(l -> l.titulo().toUpperCase().contains(titulo.toUpperCase()))
+//                            .findFirst();
+//                    if (libroBuscado.isPresent()){
+//                        System.out.println("Libro encontrado");
+//                        System.out.println(libroBuscado.get());
+//
+//                    } else {
+//                        System.out.println("No hubo coincidencias");
+//                    }
+                    buscarLibroAPI();
                     break;
                 default:
                     System.out.println("opcion no reconocida");
@@ -58,8 +59,22 @@ public class Principal {
 
     }
 
-    private void buscarLibroAPI{
-        
+    private void buscarLibroAPI(){
+        DatosLibro datos = getDatosLibro();
+        Libro libro = new Libro();
+        repositorio.save(libro);
+//        System.out.println(datos);
+
+    }
+
+    private DatosLibro getDatosLibro(){
+        System.out.println("Escribe el nombre del libro que deseas buscar");
+        var nombreLibro = teclado.nextLine();
+        var json = consumoApi.obtenerDatos(URL_BASE+"?search="+nombreLibro.replace(" ", "+"));
+        System.out.println("DATOS JSON:"+json);
+        DatosLibro datos = conversor.obtenerDatos(json, DatosLibro.class);
+        System.out.println("DATOS CONVERTIDOS:"+datos);
+        return datos;
     }
 
 
