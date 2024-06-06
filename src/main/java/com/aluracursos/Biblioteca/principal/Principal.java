@@ -1,8 +1,9 @@
 package com.aluracursos.Biblioteca.principal;
 
+import com.aluracursos.Biblioteca.model.Datos;
 import com.aluracursos.Biblioteca.model.DatosLibro;
-import com.aluracursos.Biblioteca.model.Libro;
-import com.aluracursos.Biblioteca.repository.LibroRepository;
+//import com.aluracursos.Biblioteca.model.Libro;
+//import com.aluracursos.Biblioteca.repository.LibroRepository;
 import com.aluracursos.Biblioteca.service.ConsumoAPI;
 import com.aluracursos.Biblioteca.service.ConvierteDatos;
 
@@ -16,11 +17,11 @@ public class Principal {
     private ConsumoAPI consumoApi = new ConsumoAPI();
     private final String URL_BASE = "https://gutendex.com/books/";
     private ConvierteDatos conversor = new ConvierteDatos();
-    private LibroRepository repositorio;
-
-    public Principal(LibroRepository repository) {
-        this.repositorio = repository;
-    }
+//    private LibroRepository repositorio;
+//
+//    public Principal(LibroRepository repository) {
+//        this.repositorio = repository;
+//    }
 
     public void mostrarMenu(){
         var opcion = -10;
@@ -37,7 +38,19 @@ public class Principal {
             teclado.nextLine();
             switch (opcion){
                 case 1:
-                    getDatosLibro();
+                    System.out.println("Ingrese el nombre del libro que desea buscar:");
+                    var titulo = teclado.nextLine();
+                    var json = consumoApi.obtenerDatos(URL_BASE+"?search="+titulo.replace(" ", "+"));
+                    var buscarTitulo = conversor.obtenerDatos(json, Datos.class);
+                    Optional<DatosLibro> libroBuscado = buscarTitulo.resultados().stream()
+                            .filter(l -> l.titulo().toUpperCase().contains(titulo.toUpperCase()))
+                            .findFirst();
+                    if (libroBuscado.isPresent()){
+                        System.out.println("Libro encontrado");
+                        System.out.println(libroBuscado.get());
+                    } else {
+                        System.out.println("No hubo coincidencias");
+                    }
                     break;
                 default:
                     System.out.println("opcion no reconocida");
@@ -47,12 +60,7 @@ public class Principal {
     }
 
 
-    private DatosLibro getDatosLibro() {
-//        System.out.println("Escribe el nombre del libro que deseas buscar");
-        var nombreLibro= teclado.nextLine();
-        var json = consumoApi.obtenerDatos("https://gutendex.com/books/?search=pride+and+prejudice");
-        System.out.println(json);
-        DatosLibro datos = conversor.obtenerDatos(json, DatosLibro.class);
-        return datos;
-    }
+//    private DatosLibro getDatosLibro() {
+//
+//    }
 }
