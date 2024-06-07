@@ -129,12 +129,22 @@ public class Principal {
         int opcionIdioma = leerEntero("Escriba el número correspondiente al idioma: ");
         String idioma = opcionesIdioma.get(opcionIdioma);
         if (idioma != null) {
-            Long cantidadLibros = repositorio.contarLibrosPorIdioma(idioma);
-            System.out.println("Cantidad de libros en " + (idioma.equals("en") ? "Inglés" : "Francés") + ": " + cantidadLibros);
+            List<Libro> librosPorIdioma = repositorio.encontrarLibrosPorIdioma(idioma);
+            if (!librosPorIdioma.isEmpty()) {
+                System.out.println("Cantidad de libros en " + (idioma.equals("en") ? "Inglés" : "Francés") + ": " + librosPorIdioma.size());
+                System.out.println("Titulos:");
+                for (Libro libro : librosPorIdioma) {
+                    System.out.println("- " + libro.getTitulo());
+                }
+
+            } else {
+                System.out.println("No hay libros en " + (idioma.equals("en") ? "Inglés" : "Francés"));
+            }
         } else {
             System.out.println("Opción no válida. Por favor, seleccione una opción válida.");
         }
     }
+
 
 
     private int leerEntero(String mensaje) {
