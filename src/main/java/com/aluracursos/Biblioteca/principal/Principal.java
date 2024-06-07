@@ -55,7 +55,7 @@ public class Principal {
                     mostrarAutoresBuscados();
                     break;
                 case 4:
-
+                    mostrarAutoresVivosPorAnio();
                     break;
                 default:
                     System.out.println("opcion no reconocida");
@@ -85,6 +85,8 @@ public class Principal {
         return datos;
     }
 
+
+
     private void mostrarLibrosBuscados() {
         List<Libro> libros = repositorio.findAll();
         for (Libro libro : libros) {
@@ -106,6 +108,24 @@ public class Principal {
             }
         }
     }
+
+    public void mostrarAutoresVivosPorAnio() {
+        System.out.println("Escriba el anio: ");
+        int anio = teclado.nextInt();
+        List<Autor> autoresVivos = repositorioAutores.buscarAutoresVivosPorAnio(anio);
+        if (autoresVivos.isEmpty()) {
+            System.out.println("No hay autores vivos para el año ingresado.");
+        } else {
+            System.out.println("Lista de autores vivos para el año " + anio + ":");
+            for (Autor autor : autoresVivos) {
+                System.out.println("Nombre: " + autor.getNombre());
+                System.out.println("Año de nacimiento: " + autor.getAñoNacimiento());
+                System.out.println("Año de muerte: " + (autor.getAñoMuerte() != null ? autor.getAñoMuerte() : "Vivo"));
+                System.out.println();
+            }
+        }
+    }
+
 
 
 
