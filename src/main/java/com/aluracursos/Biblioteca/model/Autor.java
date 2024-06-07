@@ -26,13 +26,12 @@ public class Autor {
     }
 
     public Autor(DatosAutor datosAutor) {
-        if (datosAutor != null) {
-            this.nombre = datosAutor.getNombre();
-            this.añoNacimiento = datosAutor.getAñoNacimiento();
-            this.añoMuerte = datosAutor.getAñoMuerte();
-        } else {
-            System.out.println("NO FUNCIONOOOO");
+        if (datosAutor == null) {
+            throw new IllegalArgumentException("Los datos del autor no pueden ser nulos");
         }
+        this.nombre = datosAutor.getNombre();
+        this.añoNacimiento = datosAutor.getAñoNacimiento();
+        this.añoMuerte = datosAutor.getAñoMuerte();
     }
 
     public Long getId() {
@@ -65,5 +64,15 @@ public class Autor {
 
     public void setAñoMuerte(Integer añoMuerte) {
         this.añoMuerte = añoMuerte;
+    }
+
+    @Override
+    public String toString() {
+        return "Autor{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", añoNacimiento=" + añoNacimiento +
+                ", añoMuerte=" + (añoMuerte != null ? añoMuerte : "Vivo") +
+                '}';
     }
 }
