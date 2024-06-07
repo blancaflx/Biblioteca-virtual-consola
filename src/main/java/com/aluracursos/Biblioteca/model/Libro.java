@@ -7,22 +7,27 @@ import java.util.List;
 @Entity
 @Table(name = "libros")
 public class Libro {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
     private String titulo;
 
-    @OneToMany(mappedBy = "libro", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "libro_id")
     private List<Autor> autores;
 
     @ElementCollection
+    @CollectionTable(name = "idiomas", joinColumns = @JoinColumn(name = "libro_id"))
+    @Column(name = "idioma")
     private List<String> idiomas;
 
-    private Integer numeroDeDescargas;
+    @Column(name = "numero_descargas")
+    private Integer numeroDescargas;
 
-    public Libro() {}
+    public Libro() {
+    }
 
     public Libro(Datos datos) {
         if (datos != null && datos.resultados() != null && !datos.resultados().isEmpty()) {
@@ -30,14 +35,14 @@ public class Libro {
             DatosLibro primerResultado = datos.resultados().get(0);
 
             // Asignar los valores del primer resultado a los atributos del libro
-            this.numeroDeDescargas = primerResultado.numeroDescargas();
+            this.numeroDescargas = primerResultado.numeroDescargas();
             this.idiomas = primerResultado.idiomas();
             this.titulo = primerResultado.titulo();
+            this.autores = primerResultado.autor();
         } else {
             System.out.println("NO FUNCIONOOOO");
         }
     }
-
 
     public Long getId() {
         return id;
@@ -71,22 +76,11 @@ public class Libro {
         this.idiomas = idiomas;
     }
 
-    public Integer getNumeroDeDescargas() {
-        return numeroDeDescargas;
+    public Integer getNumeroDescargas() {
+        return numeroDescargas;
     }
 
-    public void setNumeroDeDescargas(Integer numeroDeDescargas) {
-        this.numeroDeDescargas = numeroDeDescargas;
-    }
-
-    @Override
-    public String toString() {
-        return "Libro{" +
-                "Id=" + id +
-                ", titulo='" + titulo + '\'' +
-                ", autores=" + autores +
-                ", idiomas=" + idiomas +
-                ", numeroDeDescargas=" + numeroDeDescargas +
-                '}';
+    public void setNumeroDescargas(Integer numeroDescargas) {
+        this.numeroDescargas = numeroDescargas;
     }
 }

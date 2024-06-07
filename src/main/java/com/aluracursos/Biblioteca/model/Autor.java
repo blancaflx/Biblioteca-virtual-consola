@@ -1,25 +1,38 @@
 package com.aluracursos.Biblioteca.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
 @Table(name = "autores")
 public class Autor {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @JsonProperty("name")
     private String nombre;
 
-    @ManyToOne(cascade = CascadeType.ALL) // Adjust CascadeType based on your requirements
-    private Libro libro;
+    @JsonProperty("birth_year")
+    @Column(name = "anio_nacimiento")
+    private Integer añoNacimiento;
 
-    public Autor() {}
+    @JsonProperty("death_year")
+    @Column(name = "anio_muerte")
+    private Integer añoMuerte;
+
+    public Autor() {
+    }
 
     public Autor(DatosAutor datosAutor) {
-        this.nombre = datosAutor.nombre();
+        if (datosAutor != null) {
+            this.nombre = datosAutor.getNombre();
+            this.añoNacimiento = datosAutor.getAñoNacimiento();
+            this.añoMuerte = datosAutor.getAñoMuerte();
+        } else {
+            System.out.println("NO FUNCIONOOOO");
+        }
     }
 
     public Long getId() {
@@ -38,12 +51,19 @@ public class Autor {
         this.nombre = nombre;
     }
 
-    public Libro getLibro() {
-        return libro;
+    public Integer getAñoNacimiento() {
+        return añoNacimiento;
     }
 
-    public void setLibro(Libro libro) {
-        this.libro = libro;
+    public void setAñoNacimiento(Integer añoNacimiento) {
+        this.añoNacimiento = añoNacimiento;
+    }
+
+    public Integer getAñoMuerte() {
+        return añoMuerte;
+    }
+
+    public void setAñoMuerte(Integer añoMuerte) {
+        this.añoMuerte = añoMuerte;
     }
 }
-
