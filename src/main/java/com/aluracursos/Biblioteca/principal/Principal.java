@@ -7,6 +7,8 @@ import com.aluracursos.Biblioteca.repository.LibroRepository;
 import com.aluracursos.Biblioteca.service.ConsumoAPI;
 import com.aluracursos.Biblioteca.service.ConvierteDatos;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -16,6 +18,7 @@ public class Principal {
     private final String URL_BASE = "https://gutendex.com/books/";
     private ConvierteDatos conversor = new ConvierteDatos();
     private LibroRepository repositorio;
+    private List<Libro> libros;
 
     public Principal(LibroRepository repositorio) {
         this.repositorio = repositorio;
@@ -25,7 +28,8 @@ public class Principal {
         var opcion = -10;
         while (opcion != 0){
             var menu = """
-                    1 - Buscar libro 
+                    1 - Buscar libro por titulo
+                    2 - Lista de todos los libros buscados
                                   
                     0 - Salir
                     
@@ -36,21 +40,10 @@ public class Principal {
             teclado.nextLine();
             switch (opcion){
                 case 1:
-//                    System.out.println("Ingrese el nombre del libro que desea buscar:");
-//                    var titulo = teclado.nextLine();
-//                    var json = consumoApi.obtenerDatos(URL_BASE+"?search="+titulo.replace(" ", "+"));
-//                    var buscarTitulo = conversor.obtenerDatos(json, Datos.class);
-//                    Optional<DatosLibro> libroBuscado = buscarTitulo.resultados().stream()
-//                            .filter(l -> l.titulo().toUpperCase().contains(titulo.toUpperCase()))
-//                            .findFirst();
-//                    if (libroBuscado.isPresent()){
-//                        System.out.println("Libro encontrado");
-//                        System.out.println(libroBuscado.get());
-//
-//                    } else {
-//                        System.out.println("No hubo coincidencias");
-//                    }
                     buscarLibroAPI();
+                    break;
+                case 2:
+                    mostrarLibrosBuscados();
                     break;
                 default:
                     System.out.println("opcion no reconocida");
@@ -58,6 +51,8 @@ public class Principal {
         }
 
     }
+
+
 
     private void buscarLibroAPI(){
         Datos datos = getDatosLibro();
@@ -76,6 +71,14 @@ public class Principal {
         System.out.println("DATOS CONVERTIDOS:"+datos);
         return datos;
     }
+
+    private void mostrarLibrosBuscados() {
+        List<Libro> libros = repositorio.findAll();
+        for (Libro libro : libros) {
+            System.out.println(libro);
+        }
+    }
+
 
 
 

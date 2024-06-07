@@ -14,14 +14,16 @@ public class Libro {
 
     private String titulo;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "libro_id")
     private List<Autor> autores;
 
-    @ElementCollection
+
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "idiomas", joinColumns = @JoinColumn(name = "libro_id"))
     @Column(name = "idioma")
     private List<String> idiomas;
+
 
     @Column(name = "numero_descargas")
     private Integer numeroDescargas;
@@ -83,4 +85,22 @@ public class Libro {
     public void setNumeroDescargas(Integer numeroDescargas) {
         this.numeroDescargas = numeroDescargas;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("titulo='").append(titulo).append('\'');
+        sb.append(", autores=[");
+        for (Autor autor : autores) {
+            sb.append("{nombre=").append(autor.getNombre());
+            sb.append(", añoNacimiento=").append(autor.getAñoNacimiento());
+            sb.append(", añoMuerte=").append(autor.getAñoMuerte()).append("}, ");
+        }
+        sb.append("]");
+        sb.append(", idiomas=").append(idiomas);
+        sb.append(", numeroDescargas=").append(numeroDescargas);
+        sb.append('}');
+        return sb.toString();
+    }
+
 }
