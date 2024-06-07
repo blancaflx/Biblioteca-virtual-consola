@@ -13,40 +13,27 @@ import java.util.Map;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Principal {
-    private Scanner teclado = new Scanner(System.in);
-    private ConsumoAPI consumoApi = new ConsumoAPI();
-    private final String URL_BASE = "https://gutendex.com/books/";
-    private ConvierteDatos conversor = new ConvierteDatos();
-    private LibroRepository repositorio;
-    private AutorRepository repositorioAutores;
-    private List<Libro> libros;
+import java.util.*;
 
+public class Principal {
+    private final Scanner teclado = new Scanner(System.in);
+    private final ConsumoAPI consumoApi = new ConsumoAPI();
+    private final String URL_BASE = "https://gutendex.com/books/";
+    private final ConvierteDatos conversor = new ConvierteDatos();
+    private final LibroRepository repositorio;
+    private final AutorRepository repositorioAutores;
 
     public Principal(LibroRepository repositorio, AutorRepository repositorioAutores) {
         this.repositorio = repositorio;
         this.repositorioAutores = repositorioAutores;
     }
 
-    public void mostrarMenu(){
-        var opcion = -10;
-        while (opcion != 0){
-            var menu = """
-                    1 - Buscar libro por titulo
-                    2 - Lista de todos los libros buscados
-                    3 - Lista de autores buscados
-                    4 - Buscar autores vivos por anio
-                    5 - Cantidad de libros por idioma
-                    6 - Top 10 libros mas descargados
-                                  
-                    0 - Salir
-                    
-                    """;
-
-            System.out.println(menu);
-            opcion = teclado.nextInt();
-            teclado.nextLine();
-            switch (opcion){
+    public void mostrarMenu() {
+        int opcion;
+        do {
+            mostrarOpcionesMenu();
+            opcion = leerEntero("Seleccione una opción: ");
+            switch (opcion) {
                 case 1:
                     buscarLibroAPI();
                     break;
@@ -62,98 +49,102 @@ public class Principal {
                 case 5:
                     mostrarCantidadLibrosPorIdioma();
                     break;
+                case 0:
+                    System.out.println("Saliendo...");
+                    break;
                 default:
-                    System.out.println("opcion no reconocida");
+                    System.out.println("Opción no válida. Intente de nuevo.");
             }
-        }
-
+        } while (opcion != 0);
+        teclado.close(); // Cerrar el Scanner
     }
 
+    private void mostrarOpcionesMenu() {
+        System.out.println("""
+                Menú:
+                1 - Buscar libro por título
+                2 - Lista de todos los libros buscados
+                3 - Lista de autores buscados
+                4 - Buscar autores vivos por año
+                5 - Cantidad de libros por idioma
+                0 - Salir
+                """);
+    }
 
-
-
-    private void buscarLibroAPI(){
+    private void buscarLibroAPI() {
         Datos datos = getDatosLibro();
-        Libro libro = new Libro(datos);
-        repositorio.save(libro);
-//        System.out.println(datos);
-
+        if (datos != null) {
+            Libro libro = new Libro(datos);
+            repositorio.save(libro);
+        }
     }
 
-    private Datos getDatosLibro(){
-        System.out.println("Escribe el nombre del libro que deseas buscar");
-        var nombreLibro = teclado.nextLine();
-        var json = consumoApi.obtenerDatos(URL_BASE+"?search="+nombreLibro.replace(" ", "+"));
-        System.out.println("DATOS JSON:"+json);
-        Datos datos = conversor.obtenerDatos(json, Datos.class);
-        System.out.println("DATOS CONVERTIDOS:"+datos);
-        return datos;
+    private Datos getDatosLibro() {
+        System.out.println("Escriba el nombre del libro que desea buscar: ");
+        String nombreLibro = teclado.nextLine();
+        String json = consumoApi.obtenerDatos(URL_BASE + "?search=" + nombreLibro.replace(" ", "+"));
+        System.out.println("Datos JSON: " + json);
+        return conversor.obtenerDatos(json, Datos.class);
     }
-
-
 
     private void mostrarLibrosBuscados() {
-        List<Libro> libros = repositorio.findAll();
-        for (Libro libro : libros) {
-            System.out.println(libro);
-        }
+        repositorio.findAll().forEach(System.out::println);
     }
 
-    public void mostrarAutoresBuscados() {
+    private void mostrarAutoresBuscados() {
         List<Autor> autores = repositorioAutores.findAll();
         if (autores.isEmpty()) {
             System.out.println("No hay autores en la base de datos.");
         } else {
             System.out.println("Lista de autores:");
-            for (Autor autor : autores) {
+            autores.forEach(autor -> {
                 System.out.println("Nombre: " + autor.getNombre());
                 System.out.println("Año de nacimiento: " + autor.getAñoNacimiento());
-                System.out.println("Año de muerte: " + autor.getAñoMuerte());
+                System.out.println("Año de muerte: " + (autor.getAñoMuerte() != null ? autor.getAñoMuerte() : "Vivo"));
                 System.out.println();
-            }
+            });
         }
     }
 
-    public void mostrarAutoresVivosPorAnio() {
-        System.out.println("Escriba el anio: ");
-        int anio = teclado.nextInt();
+    private void mostrarAutoresVivosPorAnio() {
+        int anio = leerEntero("Escriba el año: ");
         List<Autor> autoresVivos = repositorioAutores.buscarAutoresVivosPorAnio(anio);
         if (autoresVivos.isEmpty()) {
             System.out.println("No hay autores vivos para el año ingresado.");
         } else {
             System.out.println("Lista de autores vivos para el año " + anio + ":");
-            for (Autor autor : autoresVivos) {
+            autoresVivos.forEach(autor -> {
                 System.out.println("Nombre: " + autor.getNombre());
                 System.out.println("Año de nacimiento: " + autor.getAñoNacimiento());
                 System.out.println("Año de muerte: " + (autor.getAñoMuerte() != null ? autor.getAñoMuerte() : "Vivo"));
                 System.out.println();
-            }
+            });
         }
     }
 
-    public void mostrarCantidadLibrosPorIdioma() {
-        Map<Integer, String> opciones = new HashMap<>();
-        opciones.put(1, "en");
-        opciones.put(2, "fr");
-
+    private void mostrarCantidadLibrosPorIdioma() {
+        Map<Integer, String> opcionesIdioma = Map.of(1, "en", 2, "fr");
         System.out.println("Seleccione el idioma:");
-        opciones.forEach((opcion, idioma) -> System.out.println(opcion + " - Libros en " + (idioma.equals("en") ? "inglés" : "francés")));
-
-        System.out.println("Escriba el número correspondiente al idioma: ");
-        int opcion = teclado.nextInt();
-
-        String idioma = opciones.get(opcion);
+        opcionesIdioma.forEach((clave, valor) -> System.out.println(clave + " - " + (valor.equals("en") ? "Inglés" : "Francés")));
+        int opcionIdioma = leerEntero("Escriba el número correspondiente al idioma: ");
+        String idioma = opcionesIdioma.get(opcionIdioma);
         if (idioma != null) {
             Long cantidadLibros = repositorio.contarLibrosPorIdioma(idioma);
-            System.out.println("Cantidad de libros en " + (idioma.equals("en") ? "inglés" : "francés") + ": " + cantidadLibros);
+            System.out.println("Cantidad de libros en " + (idioma.equals("en") ? "Inglés" : "Francés") + ": " + cantidadLibros);
         } else {
             System.out.println("Opción no válida. Por favor, seleccione una opción válida.");
         }
     }
 
 
-
-
+    private int leerEntero(String mensaje) {
+        while (true) {
+            try {
+                System.out.print(mensaje);
+                return Integer.parseInt(teclado.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Por favor, ingrese un número válido.");
+            }
+        }
+    }
 }
-
-
