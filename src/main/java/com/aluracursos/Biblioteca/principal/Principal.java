@@ -2,17 +2,16 @@ package com.aluracursos.Biblioteca.principal;
 
 import com.aluracursos.Biblioteca.model.Autor;
 import com.aluracursos.Biblioteca.model.Datos;
-import com.aluracursos.Biblioteca.model.DatosLibro;
 import com.aluracursos.Biblioteca.model.Libro;
 import com.aluracursos.Biblioteca.repository.AutorRepository;
 import com.aluracursos.Biblioteca.repository.LibroRepository;
 import com.aluracursos.Biblioteca.service.ConsumoAPI;
 import com.aluracursos.Biblioteca.service.ConvierteDatos;
+import java.util.HashMap;
+import java.util.Map;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Principal {
     private Scanner teclado = new Scanner(System.in);
@@ -22,6 +21,7 @@ public class Principal {
     private LibroRepository repositorio;
     private AutorRepository repositorioAutores;
     private List<Libro> libros;
+
 
     public Principal(LibroRepository repositorio, AutorRepository repositorioAutores) {
         this.repositorio = repositorio;
@@ -36,6 +36,8 @@ public class Principal {
                     2 - Lista de todos los libros buscados
                     3 - Lista de autores buscados
                     4 - Buscar autores vivos por anio
+                    5 - Cantidad de libros por idioma
+                    6 - Top 10 libros mas descargados
                                   
                     0 - Salir
                     
@@ -56,6 +58,9 @@ public class Principal {
                     break;
                 case 4:
                     mostrarAutoresVivosPorAnio();
+                    break;
+                case 5:
+                    mostrarCantidadLibrosPorIdioma();
                     break;
                 default:
                     System.out.println("opcion no reconocida");
@@ -126,9 +131,29 @@ public class Principal {
         }
     }
 
+    public void mostrarCantidadLibrosPorIdioma() {
+        Map<Integer, String> opciones = new HashMap<>();
+        opciones.put(1, "en");
+        opciones.put(2, "fr");
 
+        System.out.println("Seleccione el idioma:");
+        opciones.forEach((opcion, idioma) -> System.out.println(opcion + " - Libros en " + (idioma.equals("en") ? "inglés" : "francés")));
+
+        System.out.println("Escriba el número correspondiente al idioma: ");
+        int opcion = teclado.nextInt();
+
+        String idioma = opciones.get(opcion);
+        if (idioma != null) {
+            Long cantidadLibros = repositorio.contarLibrosPorIdioma(idioma);
+            System.out.println("Cantidad de libros en " + (idioma.equals("en") ? "inglés" : "francés") + ": " + cantidadLibros);
+        } else {
+            System.out.println("Opción no válida. Por favor, seleccione una opción válida.");
+        }
+    }
 
 
 
 
 }
+
+
