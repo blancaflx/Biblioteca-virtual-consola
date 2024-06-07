@@ -1,7 +1,8 @@
 package com.aluracursos.Biblioteca.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
 @Table(name = "autores")
 public class Autor {

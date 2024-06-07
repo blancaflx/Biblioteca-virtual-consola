@@ -60,19 +60,19 @@ public class Principal {
     }
 
     private void buscarLibroAPI(){
-        DatosLibro datos = getDatosLibro();
-        Libro libro = new Libro();
+        Datos datos = getDatosLibro();
+        Libro libro = new Libro(datos);
         repositorio.save(libro);
 //        System.out.println(datos);
 
     }
 
-    private DatosLibro getDatosLibro(){
+    private Datos getDatosLibro(){
         System.out.println("Escribe el nombre del libro que deseas buscar");
         var nombreLibro = teclado.nextLine();
         var json = consumoApi.obtenerDatos(URL_BASE+"?search="+nombreLibro.replace(" ", "+"));
         System.out.println("DATOS JSON:"+json);
-        DatosLibro datos = conversor.obtenerDatos(json, DatosLibro.class);
+        Datos datos = conversor.obtenerDatos(json, Datos.class);
         System.out.println("DATOS CONVERTIDOS:"+datos);
         return datos;
     }

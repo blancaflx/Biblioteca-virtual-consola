@@ -1,9 +1,9 @@
 package com.aluracursos.Biblioteca.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.util.List;
-
 @Entity
 @Table(name = "libros")
 public class Libro {
@@ -14,20 +14,28 @@ public class Libro {
     @Column(unique = true)
     private String titulo;
 
-    @OneToMany(mappedBy = "libro")
+    @OneToMany(mappedBy = "libro", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Autor> autores;
 
     @ElementCollection
     private List<String> idiomas;
 
-    private Double numeroDeDescargas;
+    private Integer numeroDeDescargas;
 
     public Libro() {}
 
-    public Libro(DatosLibro datosLibro) {
-        this.numeroDeDescargas = datosLibro.downloadCount();
-        this.idiomas = datosLibro.languages();
-        this.titulo = datosLibro.title();
+    public Libro(Datos datos) {
+        if (datos != null && datos.resultados() != null && !datos.resultados().isEmpty()) {
+            // Supongamos que solo queremos utilizar el primer resultado de la lista
+            DatosLibro primerResultado = datos.resultados().get(0);
+
+            // Asignar los valores del primer resultado a los atributos del libro
+            this.numeroDeDescargas = primerResultado.numeroDescargas();
+            this.idiomas = primerResultado.idiomas();
+            this.titulo = primerResultado.titulo();
+        } else {
+            System.out.println("NO FUNCIONOOOO");
+        }
     }
 
 
@@ -63,11 +71,11 @@ public class Libro {
         this.idiomas = idiomas;
     }
 
-    public Double getNumeroDeDescargas() {
+    public Integer getNumeroDeDescargas() {
         return numeroDeDescargas;
     }
 
-    public void setNumeroDeDescargas(Double numeroDeDescargas) {
+    public void setNumeroDeDescargas(Integer numeroDeDescargas) {
         this.numeroDeDescargas = numeroDeDescargas;
     }
 
