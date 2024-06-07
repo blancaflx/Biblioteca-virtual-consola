@@ -1,8 +1,10 @@
 package com.aluracursos.Biblioteca.principal;
 
+import com.aluracursos.Biblioteca.model.Autor;
 import com.aluracursos.Biblioteca.model.Datos;
 import com.aluracursos.Biblioteca.model.DatosLibro;
 import com.aluracursos.Biblioteca.model.Libro;
+import com.aluracursos.Biblioteca.repository.AutorRepository;
 import com.aluracursos.Biblioteca.repository.LibroRepository;
 import com.aluracursos.Biblioteca.service.ConsumoAPI;
 import com.aluracursos.Biblioteca.service.ConvierteDatos;
@@ -18,10 +20,12 @@ public class Principal {
     private final String URL_BASE = "https://gutendex.com/books/";
     private ConvierteDatos conversor = new ConvierteDatos();
     private LibroRepository repositorio;
+    private AutorRepository repositorioAutores;
     private List<Libro> libros;
 
-    public Principal(LibroRepository repositorio) {
+    public Principal(LibroRepository repositorio, AutorRepository repositorioAutores) {
         this.repositorio = repositorio;
+        this.repositorioAutores = repositorioAutores;
     }
 
     public void mostrarMenu(){
@@ -30,6 +34,8 @@ public class Principal {
             var menu = """
                     1 - Buscar libro por titulo
                     2 - Lista de todos los libros buscados
+                    3 - Lista de autores buscados
+                    4 - Buscar autores vivos por anio
                                   
                     0 - Salir
                     
@@ -45,12 +51,19 @@ public class Principal {
                 case 2:
                     mostrarLibrosBuscados();
                     break;
+                case 3:
+                    mostrarAutoresBuscados();
+                    break;
+                case 4:
+
+                    break;
                 default:
                     System.out.println("opcion no reconocida");
             }
         }
 
     }
+
 
 
 
@@ -78,6 +91,22 @@ public class Principal {
             System.out.println(libro);
         }
     }
+
+    public void mostrarAutoresBuscados() {
+        List<Autor> autores = repositorioAutores.findAll();
+        if (autores.isEmpty()) {
+            System.out.println("No hay autores en la base de datos.");
+        } else {
+            System.out.println("Lista de autores:");
+            for (Autor autor : autores) {
+                System.out.println("Nombre: " + autor.getNombre());
+                System.out.println("Año de nacimiento: " + autor.getAñoNacimiento());
+                System.out.println("Año de muerte: " + autor.getAñoMuerte());
+                System.out.println();
+            }
+        }
+    }
+
 
 
 
